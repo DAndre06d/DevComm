@@ -196,3 +196,7 @@ export const techMap: { [key: string]: string } = {
     // Three.js
     threejs: "devicon-threejs-original",
 };
+
+
+const string = "asdas"
+string.charAt(0)
