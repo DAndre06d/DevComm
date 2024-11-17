@@ -1,4 +1,5 @@
 import { auth, signOut } from "@/auth";
+import HomeFilter from "@/components/filters/HomeFilter";
 import LocalSearch from "@/components/search/LocalSearch";
 import { Button } from "@/components/ui/button";
 import ROUTES from "@/constants/routes";
@@ -37,10 +38,22 @@ interface SearchParamsProps {
     searchParams: Promise<{ [key: string]: string }>;
 }
 const Home = async ({ searchParams }: SearchParamsProps) => {
-    const { query = "" } = await searchParams;
-    const filteredQuestions = questions.filter((question) =>
-        question.title.toLocaleLowerCase().includes(query?.toLocaleLowerCase())
-    );
+    const { query = "", filter = "" } = await searchParams;
+    const filteredQuestions = questions.filter((question) => {
+        // Match query against the title
+        const matchesQuery = question.title
+            .toLowerCase()
+            .includes(query.toLowerCase());
+
+        // Match filter against tags or author name, adjust logic as needed
+        const matchesFilter = filter
+            ? question.tags.some(
+                  (tag) => tag.name.toLowerCase() === filter.toLowerCase()
+              ) || question.author.name.toLowerCase() === filter.toLowerCase()
+            : true; // If no filter is provided, include all questions
+
+        return matchesQuery && matchesFilter;
+    });
     return (
         <>
             <section className="w-full flex flex-col-reverse sm:flex-row justify-between gap-4 sm:items-center">
@@ -60,7 +73,7 @@ const Home = async ({ searchParams }: SearchParamsProps) => {
                     otherClass="flex-1"
                 />
             </section>
-            {/* Home Filter */}
+            <HomeFilter />
             <div className="mt-10 flex w-full flex-col gap-6 ">
                 {filteredQuestions.map((question) => (
                     <h1 key={question._id}>{question.title}</h1>
