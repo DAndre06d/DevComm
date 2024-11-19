@@ -47,6 +47,6 @@ const UserSchema = new Schema(
     { timestamps: true }
 );
 
-const User = models?.user || model<IUSER>("User", UserSchema);
+const User = models?.User || model<IUSER>("User", UserSchema);
 
 export default User;
