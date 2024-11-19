@@ -1,15 +1,15 @@
 import { model, models, Schema, Types } from "mongoose";
 
-export interface ITagQuestion {
-    tag: Types.ObjectId;
+export interface ICollection {
+    author: Types.ObjectId;
     question: Types.ObjectId;
 }
 
-const TagQuestionSchema = new Schema<ITagQuestion>(
+const CollectionSchema = new Schema<ICollection>(
     {
-        tag: {
+        author: {
             type: Schema.Types.ObjectId,
-            ref: "Tag",
+            ref: "User",
             required: true,
         },
         question: {
@@ -21,8 +21,7 @@ const TagQuestionSchema = new Schema<ITagQuestion>(
     { timestamps: true }
 );
 
-const TagQuestion =
-    models?.TagQuestion ||
-    model<ITagQuestion>("TagQuestion", TagQuestionSchema);
+const Collection =
+    models?.Collection || model<ICollection>("Collection", CollectionSchema);
 
-export default TagQuestion;
+export default Collection;
