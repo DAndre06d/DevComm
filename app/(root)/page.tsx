@@ -4,6 +4,7 @@ import HomeFilter from "@/components/filters/HomeFilter";
 import LocalSearch from "@/components/search/LocalSearch";
 import { Button } from "@/components/ui/button";
 import ROUTES from "@/constants/routes";
+import { api } from "@/lib/api";
 import handleError from "@/lib/handlers/error";
 import { NotFoundError } from "@/lib/http-errors";
 import { error } from "console";
@@ -47,10 +48,20 @@ const questions = [
     },
 ];
 
+const test = async () => {
+    try {
+        return await api.users.getAll();
+    } catch (e) {
+        handleError(error);
+    }
+};
+
 interface SearchParamsProps {
     searchParams: Promise<{ [key: string]: string }>;
 }
 const Home = async ({ searchParams }: SearchParamsProps) => {
+    const users = await test();
+    console.log(users);
     const { query = "", filter = "" } = await searchParams;
     const filteredQuestions = questions.filter((question) => {
         // Match query against the title

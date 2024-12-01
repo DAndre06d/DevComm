@@ -1,8 +1,11 @@
 import { ActionResponse } from "@/types/global";
 import { error } from "console";
+import logger from "../logger";
+import handleError from "./error";
+import { RequestError } from "../http-errors";
 
 interface FetchOptions extends RequestInit {
-    timeout: number;
+    timeout?: number;
 }
 
 function isError(err: unknown): err is Error {
@@ -32,11 +35,22 @@ export async function fetchHandler<T>(
         signal: controller.signal,
     };
     try {
+        const response = await fetch(url, config);
+        clearTimeout(id);
+        if (!response.ok) {
+            throw new RequestError(
+                response.status,
+                `HTTP error: ${response.status}`
+            );
+        }
+        return await response.json();
     } catch (e) {
         const err = isError(e) ? e : new Error("Unknown Error");
         if (err.name === "AbortError") {
             logger.warn(`Request to ${url} timed out.`);
         } else {
+            logger.error(`Error fetching url: ${url}`);
         }
+        return handleError(error) as ActionResponse<T>;
     }
 }
