@@ -48,20 +48,12 @@ const questions = [
     },
 ];
 
-const test = async () => {
-    try {
-        return await api.users.getAll();
-    } catch (e) {
-        handleError(error);
-    }
-};
-
 interface SearchParamsProps {
     searchParams: Promise<{ [key: string]: string }>;
 }
 const Home = async ({ searchParams }: SearchParamsProps) => {
-    const users = await test();
-    console.log(users);
+    const session = await auth();
+    console.log("Session: ", session);
     const { query = "", filter = "" } = await searchParams;
     const filteredQuestions = questions.filter((question) => {
         // Match query against the title
