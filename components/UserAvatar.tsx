@@ -13,7 +13,7 @@ const UserAvatar = ({
     name: string;
     imageUrl?: string;
     id: string;
-    classname: string;
+    classname?: string;
 }) => {
     const initials = name
         .split(" ")
