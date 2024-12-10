@@ -53,7 +53,6 @@ interface SearchParamsProps {
 }
 const Home = async ({ searchParams }: SearchParamsProps) => {
     const session = await auth();
-    console.log("Session: ", session);
     const { query = "", filter = "" } = await searchParams;
     const filteredQuestions = questions.filter((question) => {
         // Match query against the title
