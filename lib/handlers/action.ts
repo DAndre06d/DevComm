@@ -32,10 +32,11 @@ async function action<T>({
     let session: Session | null = null;
     if (authorize) {
         session = await auth();
+        if (!session) {
+            return new UnauthorizedError();
+        }
     }
-    if (!session) {
-        return new UnauthorizedError();
-    }
+
     await dbConnect();
     return { params, session };
 }

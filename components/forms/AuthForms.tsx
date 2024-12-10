@@ -23,6 +23,9 @@ import {
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import ROUTES from "@/constants/routes";
+import { ActionResponse } from "@/types/global";
+import { toast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
     username: z.string().min(2, {
@@ -33,7 +36,7 @@ const formSchema = z.object({
 interface AuthFormProps<T extends FieldValues> {
     schema: ZodType<T>;
     defaultVal: T;
-    onSubmit: (data: T) => Promise<{ success: boolean }>;
+    onSubmit: (data: T) => Promise<ActionResponse>;
     formType: "SIGN_IN" | "SIGN_UP";
 }
 
@@ -43,12 +46,29 @@ const AuthForm = <T extends FieldValues>({
     formType,
     onSubmit,
 }: AuthFormProps<T>) => {
+    const router = useRouter();
     const form = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
         defaultValues: defaultVal as DefaultValues<T>,
     });
-    const handleSubmit: SubmitHandler<T> = async () => {
-        //TODO:AUTHENTICATE USER
+    const handleSubmit: SubmitHandler<T> = async (data) => {
+        const result = (await onSubmit(data)) as ActionResponse;
+        if (result.success) {
+            toast({
+                title: "Success",
+                description:
+                    formType === "SIGN_IN"
+                        ? "Signed in successfully"
+                        : "Signed up successfully",
+            });
+            router.push(ROUTES.HOME);
+        } else {
+            toast({
+                title: `Error ${result?.status}`,
+                description: result?.error?.message,
+                variant: "destructive",
+            });
+        }
     };
 
     const buttonText = formType === "SIGN_IN" ? "Sign in" : "Sign up";
